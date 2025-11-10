@@ -1,0 +1,11 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: keycloak-json2header
+  namespace: otus-msa
+spec:
+  plugin:
+    traefik-json-body2header:
+      mappings:
+        - header: X-User-ID
+          property: sub

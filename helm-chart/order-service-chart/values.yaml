@@ -1,0 +1,79 @@
+appName: order-service
+projectNamespace: otus-msa
+replicaCount: 1
+image:
+  repository: stepanych58/order-service
+  pullPolicy: IfNotPresent
+  tag: ""
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  create: true
+  automount: true
+  annotations: { }
+  name: ""
+podAnnotations: { }
+podLabels: { }
+
+podSecurityContext: { }
+
+securityContext: { }
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /otus-user-service/(.*)
+          pathType: ImplementationSpecific
+  tls: [ ]
+ingress2:
+  enabled: true
+  className: ""
+  annotations:
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /user-service(/.*)?
+          pathType: ImplementationSpecific
+  tls: [ ]
+
+resources: { }
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+volumes: [ ]
+volumeMounts: [ ]
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }
+
+#configMaps: []
+secrets: [ ]
+
+env:
+  JAVA_TOOL_OPTIONS: "-XX:+UseSharedSpaces"
+
+envFrom:
+  - configMapRef:
+      name: order-service-cm
+#   - secretRef:
+#       name: APP_NAME-secret
+
+configMaps:
+  - name: order-service-cm
+    spring.datasource.url: jdbc:postgresql://otus-pstgr-postgresql.otus-infra.svc.cluster.local:5432/order_service
+    spring.kafka.bootstrap-servers: my-kafka.otus-infra.svc.cluster.local:9092

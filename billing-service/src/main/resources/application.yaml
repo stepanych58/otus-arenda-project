@@ -1,0 +1,66 @@
+spring:
+  aot:
+    enabled: true
+  jpa:
+    open-in-view: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: postgres
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/billing_service
+  application:
+    name: billing-service
+  kafka:
+    consumer:
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+    bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    org.zalando.logbook: TRACE
+
+logbook:
+  predicate:
+    include:
+      - path: /**
+        methods:
+          - GET
+          - POST
+          - PUT
+    exclude:
+      - path: /actuator/**
+        methods:
+          - GET
+          - POST
+      - path: /swagger-ui/**
+        methods:
+          - GET
+          - POST
+      - path: /v3/api-docs/**
+        methods:
+          - GET
+          - POST
+  filter.enabled: true
+  format.style: JSON
+  #  strategy: body-only-if-status-at-least
+  minimum-status: 400
+
+management:
+  endpoints:
+    health:
+      show-details: always
+    web.exposure.include: health,prometheus,info
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram.http.server.requests: true
+      slo:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 300ms, 400ms, 500ms, 600ms, 800ms

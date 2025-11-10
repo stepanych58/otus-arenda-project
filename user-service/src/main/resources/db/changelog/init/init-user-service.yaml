@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: user-service-init
+      author: stepanych58
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: first_name
+                  type: VARCHAR(255)
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: gender
+                  type: BOOLEAN
+              - column:
+                  name: birth_date
+                  type: DATETIME
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: user_profile
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_pickup_point
+                  name: id
+                  type: UUID
+              - column:
+                  name: user_id
+                  type: UUID
+              - column:
+                  name: address
+                  type: text
+              - column:
+                  name: start_time
+                  type: text
+              - column:
+                  name: end_time
+                  type: text
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: pickup_point

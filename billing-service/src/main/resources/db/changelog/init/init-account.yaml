@@ -1,0 +1,128 @@
+databaseChangeLog:
+  - changeSet:
+      id: create account table
+      author: stepanych58
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_account
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: type
+                  type: text
+              - column:
+                  constraints:
+                    nullable: false
+                  name: balance
+                  defaultValueNumeric: 0
+                  type: double
+              - column:
+                  name: currency
+                  type: text
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: account
+
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_payment
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: type
+                  type: text
+              - column:
+                  constraints:
+                    nullable: false
+                  name: order_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_account_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: manager_account_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: amount
+                  defaultValueNumeric: 0
+                  type: double
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+
+            tableName: payment
+
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_billing_order_outbox
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: order_id
+                  type: UUID
+              - column:
+                  constraints:
+                    foreignKeyName: fk_payment_id
+                    references: payment(id)
+                  name: payment_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: text
+              - column:
+                  name: error_message
+                  type: text
+              - column:
+                  name: sent
+                  defaultValueBoolean: false
+                  type: boolean
+              - column:
+                  name: attempt_count
+                  type: int4
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: billing_order_outbox

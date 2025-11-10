@@ -1,0 +1,283 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "title": "Spring Boot Prometheus Dashboard",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Business: Conversion (Success / Total Orders)",
+      "gridPos": { "x": 0, "y": 78, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(MSA_BUSINESS_ORDER_SUCCESS_RENT_COUNTER_total[5m]) / rate(MSA_BUSINESS_ORDER_CREATED_COUNTER_total[5m])",
+          "legendFormat": "conversion"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Business Funnel: Orders → Rent Success",
+      "gridPos": { "x": 0, "y": 84, "w": 24, "h": 6 },
+      "options": {
+        "reduceOptions": { "calcs": ["mean"], "fields": "" },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "expr": "rate(MSA_BUSINESS_ORDER_CREATED_COUNTER_total[5m])",
+          "legendFormat": "created"
+        },
+        {
+          "expr": "rate(MSA_BUSINESS_ORDER_SUCCESS_RENT_COUNTER_total[5m])",
+          "legendFormat": "success"
+        },
+        {
+          "expr": "rate(MSA_BUSINESS_ORDER_UNSUCCESS_RENT_COUNTER_total[5m])",
+          "legendFormat": "unsuccess"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "ALERT: Unsuccessful Rent Spike",
+      "gridPos": { "x": 0, "y": 90, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(MSA_BUSINESS_ORDER_UNSUCCESS_RENT_COUNTER_total[5m]) > 5",
+          "legendFormat": "unsuccess spike"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Business: Orders Created",
+      "gridPos": { "x": 0, "y": 66, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(MSA_BUSINESS_ORDER_CREATED_COUNTER_total[5m])",
+          "legendFormat": "orders created"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Business: Successful Rents",
+      "gridPos": { "x": 0, "y": 72, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(MSA_BUSINESS_ORDER_SUCCESS_RENT_COUNTER_total[5m])",
+          "legendFormat": "success rent"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Business: Unsuccessful Rents",
+      "gridPos": { "x": 12, "y": 72, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(MSA_BUSINESS_ORDER_UNSUCCESS_RENT_COUNTER_total[5m])",
+          "legendFormat": "unsuccess rent"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests by Endpoint (RPS per URI)",
+      "gridPos": { "x": 0, "y": 30, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum by (uri) (rate(http_server_requests_seconds_count[1m]))",
+          "legendFormat": "{{uri}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency p95 per Endpoint",
+      "gridPos": { "x": 0, "y": 36, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (uri, le) (rate(http_server_requests_seconds_bucket[5m])))",
+          "legendFormat": "{{uri}} p95"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Status Codes Distribution",
+      "gridPos": { "x": 0, "y": 42, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum by (status) (rate(http_server_requests_seconds_count[1m]))",
+          "legendFormat": "{{status}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "SLO Burn Rate (1h window)",
+      "gridPos": { "x": 0, "y": 48, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "(sum(rate(http_server_requests_seconds_bucket{le=\"0.3\"}[1h])) / sum(rate(http_server_requests_seconds_count[1h])))",
+          "legendFormat": "SLO burn 1h"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Heap vs Non-Heap Memory",
+      "gridPos": { "x": 0, "y": 54, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes{area=\"heap\"}",
+          "legendFormat": "heap"
+        },
+        {
+          "expr": "jvm_memory_used_bytes{area=\"nonheap\"}",
+          "legendFormat": "non-heap"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "GC Count by Cause",
+      "gridPos": { "x": 12, "y": 54, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum by (cause) (rate(jvm_gc_pause_seconds_count[5m]))",
+          "legendFormat": "{{cause}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Business Metric: Requests per application tag",
+      "gridPos": { "x": 0, "y": 60, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum by (application) (rate(http_server_requests_seconds_count[5m]))",
+          "legendFormat": "{{application}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests Per Second (RPS)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count[1m]))",
+          "legendFormat": "RPS"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Error Rate (5xx / total)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[5m])) / sum(rate(http_server_requests_seconds_count[5m]))",
+          "legendFormat": "error rate"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency p50 / p90 / p95 / p99",
+      "gridPos": { "x": 0, "y": 6, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_server_requests_seconds_bucket[5m])))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.90, sum by (le) (rate(http_server_requests_seconds_bucket[5m])))",
+          "legendFormat": "p90"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket[5m])))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_requests_seconds_bucket[5m])))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "SLO 300ms: % requests < 300ms",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_bucket{le=\"0.3\"}[5m])) / sum(rate(http_server_requests_seconds_count[5m]))",
+          "legendFormat": "<300ms %"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "JVM Heap Memory Used",
+      "gridPos": { "x": 0, "y": 18, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes{area=\"heap\"}",
+          "legendFormat": "heap"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "GC Pause Time",
+      "gridPos": { "x": 12, "y": 18, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(jvm_gc_pause_seconds_sum[5m])",
+          "legendFormat": "gc pause"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage",
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(process_cpu_seconds_total[5m])",
+          "legendFormat": "cpu"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Live JVM Threads",
+      "gridPos": { "x": 12, "y": 24, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "jvm_threads_live_threads",
+          "legendFormat": "threads"
+        }
+      ]
+    }
+  ]
+}

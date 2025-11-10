@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: init-product_reservation
+      author: stepanych58
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_product_reservation
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    foreignKeyName: fk_product
+                    references: product(id)
+                  name: product_id
+                  type: UUID
+              - column:
+                  name: order_id
+                  type: UUID
+              - column:
+                  name: user_id
+                  type: UUID
+              - column:
+                  name: count
+                  type: int
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: product_reservation

@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.otus.msa</groupId>
         <artifactId>msa-arenda-project</artifactId>
-        <version>0.1-snapshot</version>
+        <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>user-service</artifactId>
     <name>user-service</name>
     <description>Spring Boot project</description>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${user.service.version}</version>
     <packaging>jar</packaging>
     <properties>
         <keycloak.admin.version>26.0.6</keycloak.admin.version>

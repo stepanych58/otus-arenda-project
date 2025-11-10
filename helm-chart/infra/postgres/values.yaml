@@ -1,0 +1,23 @@
+architecture: "replication"
+image:
+  repository: bitnamilegacy/postgresql
+  tag: 17.6.0
+volumePermissions:
+  image:
+    repository: bitnamilegacy/os-shell
+metrics:
+  image:
+    repository: bitnamilegacy/postgres-exporter
+
+global:
+  security:
+    allowInsecureImages: true
+
+auth:
+  user: "postgres"
+  postgresPassword: "postgres"
+  password: "postgres"
+  replicationPassword: "postgres"
+
+passwordUpdateJob:
+  enabled: true

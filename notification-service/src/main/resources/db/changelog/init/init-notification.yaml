@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1755800606226-1
+      author: stepanych58
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_notification
+                  name: id
+                  type: UUID
+              - column:
+                  name: user_id
+                  type: UUID
+              - column:
+                  name: order_id
+                  type: UUID
+              - column:
+                  name: content
+                  type: text
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: notification

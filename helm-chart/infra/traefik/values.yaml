@@ -1,0 +1,51 @@
+ingressRoute:
+  dashboard:
+    enabled: true
+    matchRule: Host(`traefik.dashboard.localhost`)
+    entryPoints:
+      - web
+
+providers:
+  kubernetesGateway:
+    enabled: true
+
+additionalArguments:
+  - "--providers.kubernetescrd"
+  #  - "--providers.kubernetescrd.namespaces="  # пустая строка = все namespace
+  #  - "--entrypoints.web.address=:80"
+  #  - "--entrypoints.websecure.address=:443"
+  #  - "--experimental.plugins.auth-forward.modulename=github.com/thomseddon/traefik-forward-auth"
+  #  - "--experimental.plugins.auth-forward.version=v2.3.0"
+  - "--experimental.plugins.traefik-json-body2header.modulename=github.com/unbasical/traefik-json-body2header"
+  - "--experimental.plugins.traefik-json-body2header.version=v0.1.0"
+  - "--experimental.plugins.traefik-plugin-rewritebody.modulename=github.com/the-ccsn/traefik-plugin-rewritebody"
+  - "--experimental.plugins.traefik-plugin-rewritebody.version=v0.1.3"
+
+logs:
+  level: DEBUG
+
+gateway:
+  listeners:
+    web:
+      namespacePolicy:
+        from: All  # строго с заглавной буквы
+
+deployment:
+  extraVolumes:
+    - name: plugins-storage
+      emptyDir: { }
+  extraVolumeMounts:
+    - name: plugins-storage
+      mountPath: /plugins-storage
+
+env:
+  - name: TRAEFIK_PLUGINS_DIR
+    value: "/plugins-storage"
+
+http:
+  middlewares:
+    my-chain:
+      chain:
+        middlewares:
+          - keycloak.md-forward-auth
+          - keycloak.md-json2header

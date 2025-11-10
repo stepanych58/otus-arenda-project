@@ -1,8 +1,8 @@
 package ru.otus.msa.user.api.http.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record UserInfoDto(@JsonProperty("sub") UUID sub,
                           @JsonProperty("email_verified") boolean emailVerified,

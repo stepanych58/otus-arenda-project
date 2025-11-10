@@ -1,0 +1,67 @@
+spring:
+  aot:
+    enabled: true
+  application:
+    name: product-service
+  jpa:
+#    show-sql: true
+    open-in-view: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: postgres
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/product_service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.zalando.logbook: TRACE
+#    org.springframework: DEBUG
+
+logbook:
+  predicate:
+    include:
+      - path: /**
+        methods:
+          - GET
+          - POST
+    exclude:
+      - path: /actuator/**
+        methods:
+          - GET
+          - POST
+      - path: /swagger-ui/**
+        methods:
+          - GET
+          - POST
+      - path: /v3/api-docs/**
+        methods:
+          - GET
+          - POST
+  filter.enabled: true
+  format.style: JSON
+  minimum-status: 400
+
+management:
+  endpoints:
+    health:
+      show-details: always
+    web.exposure.include: health,prometheus,info
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram.http.server.requests: true
+      slo:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 300ms, 400ms, 500ms, 600ms, 800ms

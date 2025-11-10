@@ -1,0 +1,105 @@
+
+1) Что можно было бы сделать но не успел
+   - Настроить авторизацию и роли
+   - Пересмотреть где можно использовать рест апи вместо кафки
+   - Поиграть с масштабированием (развернуть несколько подов/донастроить кафку)
+   - подключить сервис каталог с noSQL базой данных
+   - внедрить softDelete
+   - не добавлен трейсинг в логах
+
+6) добавить эластик и x-correlation-id
+    добавить трассировку
+
+
+в биллинг добавить актюатор
+в продукт добавить исключение в спринг секьюрити
+
+
+1 сделать бизнес мониторинг сколько было неудачных запросов на авторизацию
+2 сколько упало ордеров на саге
+3 сколько
+
+
+//кейс
+1 пользователь насоздовал себе товаров
+2 пользователь пошел оформлять созданные товары
+
+
+
+Чтобы установить postgres в minikube необходимо выпольнить:
+1) подготовку миникуба
+   minikube delete
+   minikube start --cni=bridge
+   minikube addons enable storage-provisioner
+   minikube addons enable default-storageclass
+2) выполнить команду установки миникуба в namespace infra
+   helm install otus-pstgr oci://registry-1.docker.io/bitnamicharts/postgresql -n otus-infra --create-namespace
+3) затем выполнить проброс порта на localhost
+kubectl port-forward --namespace otus-infra svc/otus-pstgr-postgresql 5432:5432
+4) password можно получить из секрета командой
+   kubectl get secret otus-pstgr-postgresql -o jsonpath="{.data.postgres-password}" -n otus-infra | base64 -d
+и декодировать его из base64
+
+Чтобы выполнить деплой user-service в minikube необходимо выполнить:
+1)  helm install userservice .\user-service-chart\ -n otus-msa --create-namespace
+если необходимо удалить чарт helm uninstall userservice -n otus-msa --create-namespace
+если необходимо обновить чарт helm upgrade --install userservice ./user-service-chart -n otus-msa
+    (helm plugin install https://github.com/databus23/helm-diff -> helm diff upgrade userservice ./user-service-chart)
+
+Устанавливаем графану, прометеус в одном чарте:
+helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n otus-infra
+
+
+kube-prometheus-stack has been installed. Check its status by running:
+kubectl --namespace otus-infra get pods -l "release=kube-prometheus-stack"
+
+Получаем пароль для графаны
+
+запускаем графану через port-forward
+export POD_NAME=$()
+
+kubectl --namespace otus-infra get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=kube-prometheus-stack" -oname
+kubectl --namespace otus-infra port-forward pod/kube-prometheus-stack-grafana-598f785fc7-d2qrd 3000
+kubectl --namespace otus-infra get secrets kube-prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+
+kubectl --namespace otus-infra get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=kube-prometheus-stack" -oname
+pod/kube-prometheus-stack-grafana-598f785fc7-hhnn2
+PS C:\Users\Lenovo\OpenideProjects\otus-arenda-project> kubectl --namespace otus-infra port-forward pod/kube-prometheus-stack-grafana-598f785fc7-hhnn2 3000
+
+helm install kibana elastic/kibana -f ./helm-chart/infra/elastic/kibana/values.yaml -n otus-infra
+
+делаем стрес тест нашему микросервису
+для гет запроса ab -n 50000 -c 50 http://arch.homework/otus-user-service/user-service/api/users?page=0"&"size=4990
+
+для пост запроса ab -n 500000 -c 50  -T "application/json" -p create_user.txt http://arch.homework/otus-user-service/user-service/api/users
+
+create_user.txt:
+{
+"firstName": "string",
+"lastName": "string",
+"gender": true,
+"birthDate": "2006-01-16T01:20:47.943Z",
+"createdAt": "1978-02-14T08:51:15.829Z",
+"modifiedAt": "1982-06-26T04:31:39.904Z"
+}
+
+
+
+
+установка эластика
+helm repo add elastic https://helm.elastic.co
+
+helm install elasticsearch --set replicas=1 --set persistence.enabled=false elastic/elasticsearch -n otus-infra
+
+helm install kibana  elastic/kibana -n otus-infra
+
+helm upgrade kibana elastic/kibana -f values.yaml -n otus-infra
+
+kubectl port-forward svc/kibana-kibana 5601:5601 -n otus-infra
+
+helm repo add fluent https://fluent.github.io/helm-charts
+helm upgrade --install fluent-bit fluent/fluent-bit -f .\helm-chart\infra\elastic\kibana\fluentbit-values.yaml -n otus-infra
+
+
+kubectl get pods --namespace otus-infra -l "app.kubernetes.io/name=fluent-bit,app.kubernetes.io/instance=fluent-bit" -o jsonpath="{.items[0].metadata.name}
+

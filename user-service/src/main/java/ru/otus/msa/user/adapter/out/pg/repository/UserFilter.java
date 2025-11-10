@@ -1,11 +1,14 @@
 package ru.otus.msa.user.adapter.out.pg.repository;
 
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.StringUtils;
-import ru.otus.msa.user.adapter.out.pg.repository.entity.User;
-
 import java.time.Instant;
 
+import lombok.Builder;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
+
+import ru.otus.msa.user.adapter.out.pg.entity.User;
+
+@Builder
 public record UserFilter(String firstNameLike, String lastNameLike, Boolean gender, Instant birthDate,
                          Instant createdAt) {
     public Specification<User> toSpecification() {

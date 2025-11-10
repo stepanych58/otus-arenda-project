@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appName }}-cm
+  labels:
+    {{- include "java-service-chart.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  namespace: {{ .Values.projectNamespace }}
+data:
+  spring.datasource.url: jdbc:postgresql://otus-pstgr-postgresql-primary.otus-infra.svc.cluster.local:5432/billing_service
+  spring.kafka.bootstrap-servers: my-kafka.otus-infra.svc.cluster.local:9092
+  spring.aot.enabled: 'true'

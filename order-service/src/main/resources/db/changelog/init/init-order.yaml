@@ -19,6 +19,15 @@ databaseChangeLog:
                   name: status
                   type: text
               - column:
+                  name: pickup_address
+                  type: text
+              - column:
+                  name: pickup_start_time
+                  type: text
+              - column:
+                  name: pickup_end_time
+                  type: text
+              - column:
                   name: created_at
                   type: DATETIME
               - column:
@@ -43,6 +52,9 @@ databaseChangeLog:
                   name: user_id
                   type: UUID
               - column:
+                  name: manager_id
+                  type: UUID
+              - column:
                   constraints:
                     nullable: false
                   name: currency
@@ -51,6 +63,19 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: status
+                  type: text
+              - column:
+                  name: name
+                  type: text
+              - column:
+                  constraints:
+                    nullable: false
+                  name: rent_start_date
+                  type: text
+              - column:
+                  constraints:
+                    nullable: false
+                  name: rent_complete_date
                   type: text
               - column:
                   name: reject_reason
@@ -63,6 +88,34 @@ databaseChangeLog:
                   type: DATETIME
             tableName: msa_order
 
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_order_request
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_msa_order_request
+                    references: msa_order(id)
+                  name: order_id
+                  type: UUID
+              - column:
+                  name: request_id
+                  constraints:
+                    nullable: false
+                  type: UUID
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: msa_order_request
 
         - createTable:
             columns:
@@ -81,8 +134,29 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
+                    unique: true
+                  name: product_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
                   name: price
                   type: double
+              - column:
+                  constraints:
+                    nullable: false
+                  name: deposit_sum
+                  type: double
+              - column:
+                  constraints:
+                    nullable: false
+                  name: quantity
+                  type: int
               - column:
                   constraints:
                     nullable: false
@@ -116,7 +190,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_product
-                    references: product(id)
+                    references: product(product_id)
                   name: product_id
                   type: UUID
               - column:
@@ -125,9 +199,14 @@ databaseChangeLog:
                   name: quantity
                   type: int
               - column:
-                  constraints:
-                    nullable: false
+                  #                  constraints:
+                  #                    nullable: false
                   name: price
+                  type: double
+              - column:
+                  #                  constraints:
+                  #                    nullable: false
+                  name: deposit_sum
                   type: double
               - column:
                   name: created_at
@@ -137,8 +216,36 @@ databaseChangeLog:
                   type: DATETIME
             tableName: order_item
 
-        - sql:
-            - sql:
-                INSERT INTO product (id,"name",price,currency,created_at,modified_at) VALUES
-                ('d904fa1e-60c2-4396-a2f9-b1498cc6a7a3'::uuid,'Iphone',99999,'RUB',NULL,NULL),
-                ('18bc2286-f5a0-4a12-926e-6f2f90817118'::uuid,'Samsung galaxy 7',9999,'RUB',NULL,NULL);
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_order_history
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: order_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: text
+              - column:
+                  name: sent
+                  defaultValue: false
+                  type: boolean
+              - column:
+                  name: sent_object
+                  type: text
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: order_history

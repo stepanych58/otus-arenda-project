@@ -10,15 +10,22 @@
     </parent>
     <groupId>com.otus.msa</groupId>
     <artifactId>msa-arenda-project</artifactId>
-    <version>0.1-snapshot</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>msa-arenda-project</name>
     <description>msa arenda project</description>
     <packaging>pom</packaging>
     <modules>
-        <module>order-service</module>
-        <module>user-service</module>
         <module>user-service-api</module>
         <module>order-service-api</module>
+        <module>billing-service-api</module>
+        <module>notification-service-api</module>
+        <module>product-service-api</module>
+
+        <module>order-service</module>
+        <module>user-service</module>
+        <module>billing-service</module>
+        <module>notification-service</module>
+        <module>product-service</module>
     </modules>
     <developers>
         <developer>
@@ -28,16 +35,29 @@
     </developers>
     <properties>
         <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <org.json.version>20231013</org.json.version>
         <zalando.starter.version>3.12.3</zalando.starter.version>
         <springdoc.openapi.version>2.8.5</springdoc.openapi.version>
         <mapstruct.version>1.6.0</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <testcontainers-bom.version>2.0.2</testcontainers-bom.version>
+        <testcontainers-kafka.version>0.2.0</testcontainers-kafka.version>
+        <easy-random.version>5.0.0</easy-random.version>
         <jib.version>3.4.2</jib.version>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
         <user.service.api.version>0.0.1-SNAPSHOT</user.service.api.version>
-        <user.service.version>0.0.1-SNAPSHOT</user.service.version>
+        <user.service.version>0.1.4-SNAPSHOT</user.service.version>
         <order.service.api.version>0.0.1-SNAPSHOT</order.service.api.version>
-        <order.service.version>0.0.1-SNAPSHOT</order.service.version>
+        <order.service.version>0.1.4-SNAPSHOT</order.service.version>
+        <billing.service.api.version>0.0.1-SNAPSHOT</billing.service.api.version>
+        <billing.service.version>0.1.4-SNAPSHOT</billing.service.version>
+        <notification.service.api.version>0.0.1-SNAPSHOT</notification.service.api.version>
+        <notification.service.version>0.1.4-SNAPSHOT</notification.service.version>
+        <product.service.api.version>0.0.1-SNAPSHOT</product.service.api.version>
+        <product.service.version>0.1.4-SNAPSHOT</product.service.version>
+        <product.service.api.version>0.0.1-SNAPSHOT</product.service.api.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -73,6 +93,20 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok-mapstruct-binding</artifactId>
                 <version>${lombok-mapstruct-binding.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jeasy</groupId>
+                <artifactId>easy-random</artifactId>
+                <version>${easy-random.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -122,7 +156,8 @@
                             <verbose>true</verbose>
                             <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
                             <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                            <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                            <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                            </generateGitPropertiesFilename>
                             <failOnNoGitDirectory>false</failOnNoGitDirectory>
                             <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                         </configuration>
@@ -140,7 +175,8 @@
                                     <rules>
                                         <requireJavaVersion>
                                             <message>
-                                                🚫 Java version error: This project requires Java ${java.version} or higher.
+                                                🚫 Java version error: This project requires Java ${java.version} or
+                                                higher.
 
                                                 Your current Java version is ${java.version}
                                                 To fix this:
@@ -151,7 +187,7 @@
 
                                                 For more information, check the project documentation.
                                             </message>
-                                            <version>${java.version})</version>
+                                            <version>${java.version}</version>
                                         </requireJavaVersion>
                                     </rules>
                                     <failFast>true</failFast>
@@ -194,4 +230,18 @@
             </build>
         </profile>
     </profiles>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

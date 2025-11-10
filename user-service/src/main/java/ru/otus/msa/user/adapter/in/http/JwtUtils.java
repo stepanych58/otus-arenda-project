@@ -1,8 +1,8 @@
 package ru.otus.msa.user.adapter.in.http;
 
-import org.json.JSONObject;
 import java.util.Base64;
 import java.util.UUID;
+import org.json.JSONObject;
 
 public class JwtUtils {
 

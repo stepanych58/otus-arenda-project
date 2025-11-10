@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-servicemonitor
+  namespace: {{ .Values.projectNamespace }}
+  labels:
+    release: kube-prometheus-stack   # если надо, чтобы чарты Prometheus его подобрали
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "java-service-chart.name" . }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.projectNamespace }}
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 35s
+      targetPort: 8080
+      scrapeTimeout: 10s

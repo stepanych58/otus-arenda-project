@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: traefik-keycloak
+  namespace: otus-msa
+type: Opaque
+data:
+  client_id: dXNlci1zZXJ2aWNl        # base64("user-service")
+  client_secret: NVVPNERUMmloaWJpMlVsVEJNSnkzSzBGbTVCWXRGMFp=

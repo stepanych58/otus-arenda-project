@@ -1,0 +1,42 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.appName }}-trf
+  namespace: {{ .Values.projectNamespace }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`product-service-app.localhost`) && PathPrefix(`/swagger`)
+      kind: Rule
+      services:
+        - name: productservice-java-service-chart
+          port: 80
+
+    - match: Host(`product-service-app.localhost`) && PathPrefix(`/v3/api-docs`)
+      kind: Rule
+      services:
+        - name: productservice-java-service-chart
+          port: 80
+
+    - match: Host(`product-service-app.localhost`) && Method(`GET`) && PathPrefix(`/product-service/api/v1/product`)
+      kind: Rule
+      services:
+        - name: productservice-java-service-chart
+          port: 80
+
+    # Эндпоинты Actuator
+    - match: Host(`product-service-app.localhost`) && PathPrefix(`/actuator`)
+      kind: Rule
+      services:
+        - name: productservice-java-service-chart
+          port: 80
+
+    # Остальные API — требуют авторизации
+    - match: Host(`product-service-app.localhost`) && PathPrefix(`/product-service/api/v1`)
+      kind: Rule
+      services:
+        - name: productservice-java-service-chart
+          port: 80
+      middlewares:
+        - name: keycloak-forward-auth
