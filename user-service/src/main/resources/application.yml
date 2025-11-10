@@ -1,0 +1,74 @@
+#server:
+#  port: 8081
+
+spring:
+  jpa:
+    open-in-view: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: postgres
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/user_service
+  application:
+    name: user-service
+  kafka:
+    bootstrap-servers: localhost:9092
+
+keycloak:
+  realm: otus-msa
+#  auth-server-url: http://localhost:8086/realms/${keycloak.realm}
+  auth-server-url: http://localhost:8086
+  resource: user-service
+  bearer-only: false
+  credentials:
+    secret: jAPSv1CW5oeHDZjDg5xyY4IrxUClHtpH
+  ssl-required: external
+  use-resource-role-mappings: true
+
+#server.servlet.context-path: /user-service  # Префикс для всего приложения
+
+logging:
+  level:
+#    root: DEBUG
+    org.zalando.logbook: TRACE
+
+logbook:
+  predicate:
+    include:
+      - path: /**
+        methods:
+          - GET
+          - POST
+    exclude:
+      - path: /actuator/**
+        methods:
+          - GET
+          - POST
+      - path: /swagger-ui/**
+        methods:
+          - GET
+          - POST
+      - path: /v3/api-docs/**
+        methods:
+          - GET
+          - POST
+  filter.enabled: true
+  format.style: JSON
+  #  strategy: body-only-if-status-at-least
+  minimum-status: 400
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    distribution:
+      slo:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 300ms, 400ms, 500ms, 600ms, 800ms
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"

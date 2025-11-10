@@ -1,0 +1,144 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1755800606226-1
+      author: stepanych58
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_order_user
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: text
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: msa_user
+
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_order
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_msa_user
+                    references: msa_user(id)
+                  name: user_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: currency
+                  type: text
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: text
+              - column:
+                  name: reject_reason
+                  type: text
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: msa_order
+
+
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_product
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: text
+              - column:
+                  constraints:
+                    nullable: false
+                  name: price
+                  type: double
+              - column:
+                  constraints:
+                    nullable: false
+                  name: currency
+                  type: text
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: product
+
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_order_item
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order
+                    references: msa_order(id)
+                  name: order_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_product
+                    references: product(id)
+                  name: product_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: quantity
+                  type: int
+              - column:
+                  constraints:
+                    nullable: false
+                  name: price
+                  type: double
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: modified_at
+                  type: DATETIME
+            tableName: order_item
+
+        - sql:
+            - sql:
+                INSERT INTO product (id,"name",price,currency,created_at,modified_at) VALUES
+                ('d904fa1e-60c2-4396-a2f9-b1498cc6a7a3'::uuid,'Iphone',99999,'RUB',NULL,NULL),
+                ('18bc2286-f5a0-4a12-926e-6f2f90817118'::uuid,'Samsung galaxy 7',9999,'RUB',NULL,NULL);
