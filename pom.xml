@@ -48,15 +48,15 @@
         <jib.version>3.4.2</jib.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
         <user.service.api.version>0.0.1-SNAPSHOT</user.service.api.version>
-        <user.service.version>0.1.4-SNAPSHOT</user.service.version>
+        <user.service.version>0.1.6-SNAPSHOT</user.service.version>
         <order.service.api.version>0.0.1-SNAPSHOT</order.service.api.version>
-        <order.service.version>0.1.4-SNAPSHOT</order.service.version>
+        <order.service.version>0.1.6-SNAPSHOT</order.service.version>
         <billing.service.api.version>0.0.1-SNAPSHOT</billing.service.api.version>
-        <billing.service.version>0.1.4-SNAPSHOT</billing.service.version>
+        <billing.service.version>0.1.6-SNAPSHOT</billing.service.version>
         <notification.service.api.version>0.0.1-SNAPSHOT</notification.service.api.version>
-        <notification.service.version>0.1.4-SNAPSHOT</notification.service.version>
+        <notification.service.version>0.1.6-SNAPSHOT</notification.service.version>
         <product.service.api.version>0.0.1-SNAPSHOT</product.service.api.version>
-        <product.service.version>0.1.4-SNAPSHOT</product.service.version>
+        <product.service.version>0.1.6-SNAPSHOT</product.service.version>
         <product.service.api.version>0.0.1-SNAPSHOT</product.service.api.version>
     </properties>
     <dependencyManagement>

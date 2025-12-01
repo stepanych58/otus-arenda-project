@@ -35,9 +35,9 @@ public class PayDepositToManagerEventProcessor extends OrderEventProcessor {
         CurrencyEnum currency = CurrencyEnum.valueOf(orderEvent.currency().name());
         BigDecimal orderEventDeposit = orderEvent.getDeposit();
         Account managerDebet = billingService.getDebetAccount(managerId, currency);
-        Account managerDeposit = billingService.getDepositAccount(managerId, currency);
         managerDebet.setBalance(managerDebet.getBalance().add(orderEventDeposit));
-        managerDeposit.setBalance(managerDebet.getBalance().subtract(orderEventDeposit));
+        Account managerDeposit = billingService.getDepositAccount(managerId, currency);
+        managerDeposit.setBalance(managerDeposit.getBalance().subtract(orderEventDeposit));
         PaymentEntity payment = billingService.createPayment(PaymentType.DEPOSIT_MANAGER_ACCRUED, orderId,
                 userId,
                 managerId,
