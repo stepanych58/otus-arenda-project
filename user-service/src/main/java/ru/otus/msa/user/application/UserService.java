@@ -3,9 +3,9 @@ package ru.otus.msa.user.application;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import ru.otus.msa.user.api.http.dto.RegisterUserDto;
+import ru.otus.msa.user.adapter.out.pg.entity.User;
 import ru.otus.msa.user.adapter.out.pg.repository.UserFilter;
-import ru.otus.msa.user.adapter.out.pg.repository.entity.User;
+import ru.otus.msa.user.api.http.dto.RegisterUserDto;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,5 +26,5 @@ public interface UserService {
 
     User delete(UUID id);
 
-    void deleteMany(List<UUID> ids);
+    boolean isUserExistByEmail(String email);
 }

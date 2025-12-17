@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: keycloak
+  namespace: otus-kk
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`user-service-app.localhost`) && PathPrefix(`/realms`)
+      kind: Rule
+      services:
+        - name: keycloack-keycloak
+          port: 80

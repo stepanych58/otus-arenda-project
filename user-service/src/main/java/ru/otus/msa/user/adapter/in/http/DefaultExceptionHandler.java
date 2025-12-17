@@ -7,6 +7,7 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.otus.msa.user.application.exception.InvalidXUserIdException;
+import ru.otus.msa.user.application.exception.UserExistException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
@@ -19,6 +20,17 @@ public class DefaultExceptionHandler {
                         .builder(
                                 ex,
                                 ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage()))
+                        .build());
+    }
+
+    @ExceptionHandler(UserExistException.class)
+    public ResponseEntity<ErrorResponse> accessDenied(UserExistException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse
+                        .builder(
+                                ex,
+                                ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage()))
                         .build());
     }
 }

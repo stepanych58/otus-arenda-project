@@ -14,16 +14,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.otus.msa.user.adapter.out.kafka.ExportUsersService;
+import ru.otus.msa.user.adapter.out.pg.entity.User;
 import ru.otus.msa.user.adapter.out.pg.repository.UserFilter;
 import ru.otus.msa.user.application.UserService;
 import ru.otus.msa.user.application.exception.InvalidXUserIdException;
-import ru.otus.msa.user.adapter.out.pg.repository.entity.User;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Tag(name = "user-service CRUD", description = "API to work with user data")
 @RestController
@@ -34,6 +38,7 @@ import java.util.UUID;
 public class UserResource {
 
     private final UserService userService;
+    private final ExportUsersService exportUsersService;
 
     @GetMapping
     public PagedModel<User> getAll(
@@ -102,6 +107,14 @@ public class UserResource {
             @RequestHeader("x-user-id") UUID xUserId,
             @PathVariable UUID id) {
         return userService.delete(id);
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<String> export() {
+        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
+            executorService.execute(exportUsersService::export);
+        }
+        return ResponseEntity.ok("OK");
     }
 
 //    @DeleteMapping

@@ -8,25 +8,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import ru.otus.msa.user.adapter.out.pg.entity.PickupPoint;
+import ru.otus.msa.user.adapter.out.pg.entity.User;
+import ru.otus.msa.user.adapter.out.pg.repository.PickupPointRepository;
 import ru.otus.msa.user.adapter.out.pg.repository.UserFilter;
 import ru.otus.msa.user.adapter.out.pg.repository.UserRepository;
-import ru.otus.msa.user.adapter.out.pg.repository.entity.User;
 import ru.otus.msa.user.api.http.dto.RegisterUserDto;
 import ru.otus.msa.user.application.UserService;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PickupPointRepository pickupPointRepository;
+
     private final RegisterUserMapper registerUserMapper;
+
     private final ObjectMapper objectMapper;
 
     @Override
@@ -39,7 +42,8 @@ public class UserServiceImpl implements UserService {
     public User getOne(UUID id) {
         Optional<User> userOptional = userRepository.findById(id);
         return userOptional.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+                new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Entity with id `%s` not found".formatted(id)));
     }
 
     @Override
@@ -48,15 +52,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(UUID keycloakClientUserId, RegisterUserDto user) {
-        User map = registerUserMapper.map(keycloakClientUserId, user);
-        return userRepository.save(map);
+    @Transactional
+    public User create(UUID keycloakClientUserId, RegisterUserDto createUserRequest) {
+        User userEntity = registerUserMapper.map(keycloakClientUserId, createUserRequest);
+        if (Objects.nonNull(createUserRequest.getPickupPoint())) {
+            PickupPoint pickupPointEntity = registerUserMapper.map(createUserRequest.getPickupPoint());
+            pickupPointEntity.setUser(userEntity);
+            userEntity.setPickupPoint(pickupPointEntity);
+        }
+//        pickupPointRepository.save(pickupPointEntity);
+        return userRepository.save(userEntity);
     }
 
     @Override
     public User patch(UUID id, JsonNode patchNode) throws IOException {
         User user = userRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+                new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Entity with id `%s` not found".formatted(id)));
 
         objectMapper.readerForUpdating(user).readValue(patchNode);
 
@@ -84,7 +96,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteMany(List<UUID> ids) {
-        userRepository.deleteAllById(ids);
+    public boolean isUserExistByEmail(String email) {
+        return !userRepository.findAllByEmail(email).isEmpty();
     }
 }

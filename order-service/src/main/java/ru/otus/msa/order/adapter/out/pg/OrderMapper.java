@@ -2,15 +2,15 @@ package ru.otus.msa.order.adapter.out.pg;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.otus.msa.order.adapter.out.pg.repository.entity.OrderEntity;
-import ru.otus.msa.order.adapter.out.pg.repository.entity.OrderItemEntity;
-import ru.otus.msa.order.adapter.out.pg.repository.entity.ProductEntity;
+import ru.otus.msa.order.adapter.out.pg.entity.MsaUserEntity;
+import ru.otus.msa.order.adapter.out.pg.entity.OrderEntity;
+import ru.otus.msa.order.adapter.out.pg.entity.OrderItemEntity;
+import ru.otus.msa.order.adapter.out.pg.entity.ProductEntity;
 import ru.otus.msa.order.api.common.OrderStatus;
 import ru.otus.msa.order.api.http.OrderDto;
 import ru.otus.msa.order.api.http.OrderItemDto;
 import ru.otus.msa.order.api.kafka.OrderEvent;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +24,10 @@ public interface OrderMapper {
     @Mapping(target = "items", expression = "java(mapOrderItem(orderDto, products))")
     OrderEntity toCreateEntityInner(OrderDto orderDto, List<ProductEntity> products);
 
-    default OrderEntity toCreateEntity(OrderDto orderDto, List<ProductEntity> products) {
+    default OrderEntity toCreateEntity(OrderDto orderDto, List<ProductEntity> products, MsaUserEntity user, MsaUserEntity msaManagerEntity) {
         OrderEntity order = toCreateEntityInner(orderDto, products);
+        order.setUser(user);
+        order.setManager(msaManagerEntity);
         order.setItems(order.getItems()
                 .stream()
                 .peek(oi -> oi.setOrder(order))
@@ -41,8 +43,8 @@ public interface OrderMapper {
         }
 
         List<OrderItemEntity> result = new ArrayList<>(items.size());
-        Map<UUID, BigDecimal> productPriceMap = products.stream()
-                .collect(Collectors.toMap(ProductEntity::getId, ProductEntity::getPrice));
+        Map<UUID, ProductEntity> productPriceMap = products.stream()
+                .collect(Collectors.toMap(ProductEntity::getProductId, v -> v));
         for (OrderItemDto orderItemDto : items) {
             result.add(mapOrderItem(orderItemDto, productPriceMap.get(orderItemDto.productId())));
         }
@@ -50,12 +52,26 @@ public interface OrderMapper {
         return result;
     }
 
-    @Mapping(target = "price", source = "productPrice")
-    OrderItemEntity mapOrderItem(OrderItemDto orderItemDto, BigDecimal productPrice);
+    @Mapping(target = "id", source = "orderItemDto.id")
+    @Mapping(target = "price", source = "productEntity.price")
+    @Mapping(target = "depositSum", source = "productEntity.depositSum")
+    @Mapping(target = "productId", source = "orderItemDto.productId")
+    @Mapping(target = "quantity", source = "orderItemDto.quantity")
+    OrderItemEntity mapOrderItem(OrderItemDto orderItemDto, ProductEntity productEntity);
 
+    @Mapping(target = "orderId", source = "id")
+    @Mapping(target = "userId", source = "orderEntity.user.id")
+    @Mapping(target = "managerId", source = "orderEntity.manager.id")
+    @Mapping(target = "orderName", source = "orderEntity.name")
+    @Mapping(target = "pickUpAddress", source = "orderEntity.manager.pickupAddress")
+    @Mapping(target = "pickUpTimes", expression = "java(orderEntity.getManager().getPickupStartTime() + \" - \" + orderEntity.getManager().getPickupEndTime())")
     OrderEvent toEvent(OrderEntity orderEntity);
+
     @Mapping(target = "currentStatus", source = "status")
     OrderDto toDto(OrderEntity orderEntity);
+
     @Mapping(target = "currentStatus", source = "orderEntity.status")
+    @Mapping(target = "userId", source = "orderEntity.user.id")
+    @Mapping(target = "managerId", source = "orderEntity.manager.id")
     OrderDto toDto(OrderEntity orderEntity, List<OrderStatus> statusHistory);
 }

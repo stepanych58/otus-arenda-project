@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appName }}-cm
+  labels:
+    {{- include "user-service-chart.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  namespace: {{ .Values.projectNamespace }}
+data:
+  spring.datasource.url: jdbc:postgresql://otus-pstgr-postgresql-primary.otus-infra.svc.cluster.local:5432/user_service
+  springdoc.swagger-ui.config-url: /v3/api-docs/swagger-config
+  springdoc.swagger-ui.url: /v3/api-docs
+  springdoc.swagger-ui.urls.url: /v3/api-docs
+  spring.aot.enabled: 'true'
+  #  springdoc.swagger-ui.config-url: /otus-user-service/v3/api-docs/swagger-config
+  #  springdoc.swagger-ui.url: /otus-user-service/v3/api-docs
+  #  springdoc.swagger-ui.urls.url: /otus-user-service/v3/api-docs
+  spring.kafka.bootstrap-servers: my-kafka.otus-infra.svc.cluster.local:9092
+  keycloak.auth-server-url: http://keycloack-keycloak.otus-kk.svc.cluster.local:80

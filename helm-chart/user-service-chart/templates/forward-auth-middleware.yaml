@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: keycloak-forward-auth
+  namespace: otus-msa
+spec:
+  forwardAuth:
+    address: "http://keycloack-keycloak.otus-kk.svc.cluster.local:80/realms/otus-msa/protocol/openid-connect/userinfo"
+    trustForwardHeader: true
+    authRequestHeaders:
+      - "Authorization"
+#    authResponseHeaders:
+#      - "Authorization"  # или любой заголовок, который Keycloak отдаёт

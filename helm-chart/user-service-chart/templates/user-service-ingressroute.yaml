@@ -1,0 +1,42 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.appName }}-trf
+  namespace: {{ .Values.projectNamespace }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    # Эндпоинты Swagger
+    - match: Host(`user-service-app.localhost`) && PathPrefix(`/swagger`)
+      kind: Rule
+      services:
+        - name: userservice-user-service-chart
+          port: 80
+    - match: Host(`user-service-app.localhost`) && PathPrefix(`/v3/api-docs`)
+      kind: Rule
+      services:
+        - name: userservice-user-service-chart
+          port: 80
+
+    # Эндпоинты Actuator
+    - match: Host(`user-service-app.localhost`) && PathPrefix(`/actuator`)
+      kind: Rule
+      services:
+        - name: userservice-user-service-chart
+          port: 80
+
+    # Эндпоинт авторизации
+    - match: Host(`user-service-app.localhost`) && PathPrefix(`/auth`)
+      kind: Rule
+      services:
+        - name: userservice-user-service-chart
+          port: 80
+
+    - match: Host(`user-service-app.localhost`) && PathPrefix(`/user-service/api`)
+      kind: Rule
+      services:
+        - name: userservice-user-service-chart
+          port: 80
+      middlewares:
+        - name: keycloak-forward-auth

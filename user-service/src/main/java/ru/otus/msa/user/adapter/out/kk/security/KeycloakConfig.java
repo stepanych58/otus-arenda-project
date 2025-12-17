@@ -1,6 +1,5 @@
 package ru.otus.msa.user.adapter.out.kk.security;
 
-import lombok.Getter;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -9,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
+
+import lombok.Getter;
 
 @Configuration
 @Getter

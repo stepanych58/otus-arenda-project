@@ -2,8 +2,14 @@
 #  port: 8081
 
 spring:
+#  aot:
+#    enabled: true
   jpa:
-    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+    #    show-sql: true
     open-in-view: false
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -51,17 +57,17 @@ logbook:
   minimum-status: 400
 
 management:
-  endpoint:
+  endpoints:
     health:
       show-details: always
+    web.exposure.include: health,prometheus,info
   metrics:
-    distribution:
-      slo:
-        http.server.requests: 10ms, 50ms, 100ms, 200ms, 300ms, 400ms, 500ms, 600ms, 800ms
     export:
       prometheus:
         enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram.http.server.requests: true
+      slo:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 300ms, 400ms, 500ms, 600ms, 800ms

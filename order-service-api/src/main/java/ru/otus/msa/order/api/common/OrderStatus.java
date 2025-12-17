@@ -8,63 +8,76 @@ import lombok.Getter;
 public enum OrderStatus {
 
     /**
-     * Ожидает оплаты
+     * Заказ создан
      */
-    WAITING_PAYMENT,
-    /**
-     * Создан
-     */
-    CREATED(WAITING_PAYMENT),
-    /**
-     * Заказ отклонен во время проведения оплаты
-     */
-    PAYMENT_REJECT,
+    CREATED,
     /**
      * Резервирование продуктов
      */
     WAITING_RESERVE_PRODUCT,
     /**
-     * Резервирование курьера
+     * Ожидает оплаты залога
      */
-    WAITING_RESERVE_DELIVERY,
+    WAITING_PAYMENT_DEPOSIT,
     /**
-     * Ожидание доставки курьером
+     * Ожидание получения клиентом
      */
-    WAITING_DELIVERY,
+    WAITING_CLIENT_RECEIVE,
+
     /**
-     * Заказ оплачен
+     * Ожидает оплаты аренды товара
      */
-    PAYED(WAITING_RESERVE_PRODUCT),
+    WAITING_PAYMENT_PRODUCT,
+
     /**
-     * Заказ отклонен во время резервирования продуктов
+     * Ожидание подтверждения администратора о получении
+     */
+    WAITING_ADMIN_RECEIVE,
+    /**
+     * Ожидание возврата депозита клиенту
+     */
+    WAITING_RETURN_DEPOSIT,
+
+    /**
+     * Ошибка во время возврата депозита
+     */
+    RETURN_DEPOSIT_ERROR,
+
+    /**
+     * Отказ при принятии администратором
+     */
+    ADMIN_RECEIVE_REJECT,
+
+    /**
+     * Клиент отказался при получении
+     */
+    WAITING_REVERT_RESERVE_PRODUCT,
+
+    /**
+     * Оплата товара отклонена
+     */
+    PAYMENT_PRODUCT_REJECT,
+    /**
+     * Клиент отказался от товара при получении
+     */
+    CLIENT_RECEIVE_REJECT,
+    /**
+     * Отклонен запрос на оплату депозита
+     */
+    PAYMENT_DEPOSIT_REJECT,
+    /**
+     * Отклонен запрос на бронирование товара
      */
     RESERVE_PRODUCT_REJECT,
     /**
-     * Возврат оплаты
+     * Заказ не может быть выполнен.
+     * Заказ отклонен.
      */
-    PAYMENT_REVERTED,
-    /**
-     * Резервирование продуктов выполнено
-     */
-    PRODUCT_RESERVED(WAITING_RESERVE_DELIVERY),
-
-    /**
-     * Заказ отклонен во время резервирования курьера
-     */
-    RESERVE_DELIVERY_REJECT,
-    /**
-     * Возврат зарезервированых продуктов
-     */
-    PRODUCT_REVERTED,
-
-    /**
-     * Резервирование курьера выполнено
-     */
-    DELIVERY_RESERVED(WAITING_DELIVERY),
+    REJECTED,
     /**
      * Заказ завершен
      */
-    COMPLETED;
+    COMPLETED, RESERVE_PRODUCT_ERROR;
 
     @Getter
     private OrderStatus next;

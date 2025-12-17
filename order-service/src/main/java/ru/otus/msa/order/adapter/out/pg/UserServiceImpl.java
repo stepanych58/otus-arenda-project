@@ -1,10 +1,11 @@
 package ru.otus.msa.order.adapter.out.pg;
 
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import ru.otus.msa.order.adapter.out.pg.entity.MsaUserEntity;
 import ru.otus.msa.order.adapter.out.pg.repository.MsaUserRepository;
-import ru.otus.msa.order.adapter.out.pg.repository.entity.MsaUserEntity;
 import ru.otus.msa.order.application.UserService;
 import ru.otus.msa.user.api.kafka.dto.UserEvent;
 
@@ -13,6 +14,7 @@ import ru.otus.msa.user.api.kafka.dto.UserEvent;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final MsaUserRepository users;
+
     private final MsaUserMapper userMapper;
 
     @Override

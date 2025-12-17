@@ -1,22 +1,37 @@
 package ru.otus.msa.order.api.kafka;
 
-import lombok.Builder;
-import ru.otus.msa.order.api.common.OrderStatus;
-import ru.otus.msa.order.api.http.CurrencyEnumDto;
-
+import java.beans.Transient;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+import ru.otus.msa.order.api.common.OrderStatus;
+import ru.otus.msa.order.api.http.CurrencyEnumDto;
+
 @Builder(toBuilder = true)
-public record OrderEvent(UUID id,
+public record OrderEvent(@NotNull
+                         UUID orderId,
+                         String orderName,
+                         String rentStartDate,
+                         String rentCompleteDate,
+                         String pickUpAddress,
+                         String pickUpTimes,
+                         @NotNull
                          UUID userId,
+                         @NotNull
+                         UUID managerId,
+                         @NotNull
                          OrderStatus status,
                          String rejectReason,
                          String revertReason,
+                         @NotNull
                          CurrencyEnumDto currency,
                          List<OrderItemEvent> items) {
+    @Transient
     public BigDecimal getCoast() {
         return Optional.ofNullable(items)
                 .map(i -> i.stream()
@@ -25,54 +40,20 @@ public record OrderEvent(UUID id,
                 .orElse(BigDecimal.ZERO);
     }
 
-    public OrderEvent paymentRejected(String rejectReason) {
-        return toBuilder()
-                .rejectReason(rejectReason)
-                .status(OrderStatus.PAYMENT_REJECT)
-                .build();
+    @Transient
+    public BigDecimal getDeposit() {
+        return Optional.ofNullable(items)
+                .map(i -> i.stream()
+                        .map(OrderItemEvent::getDeposit)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                .orElse(BigDecimal.ZERO);
     }
 
-    public OrderEvent paymentCompleted() {
-        return toBuilder()
-                .status(OrderStatus.PAYED)
-                .build();
-    }
-
-    public OrderEvent paymentReverted() {
-        return toBuilder()
-                .status(OrderStatus.PAYMENT_REVERTED)
-                .build();
-    }
-
-    public OrderEvent productsReserved() {
-        return toBuilder()
-                .status(OrderStatus.PRODUCT_RESERVED)
-                .build();
-    }
-
-    public OrderEvent rejectProductReservation(String rejectReason) {
-        return toBuilder()
-                .rejectReason(rejectReason)
-                .status(OrderStatus.RESERVE_PRODUCT_REJECT)
-                .build();
-    }
-
-    public OrderEvent productsReverted() {
-        return toBuilder()
-                .status(OrderStatus.PRODUCT_REVERTED)
-                .build();
-    }
-
-    public OrderEvent rejectDeliveryReservation(String rejectReason) {
-        return toBuilder()
-                .rejectReason(rejectReason)
-                .status(OrderStatus.RESERVE_DELIVERY_REJECT)
-                .build();
-    }
-
-    public OrderEvent deliveryReserved() {
-        return toBuilder()
-                .status(OrderStatus.DELIVERY_RESERVED)
-                .build();
+    @Transient
+    public List<UUID> getProductIds() {
+        return Optional.ofNullable(items)
+                .map(Collection::stream)
+                .map(s -> s.map(OrderItemEvent::productId).toList())
+                .orElse(List.of());
     }
 }

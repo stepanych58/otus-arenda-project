@@ -15,11 +15,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
+import ru.otus.msa.user.adapter.out.kk.security.KeycloakConfig;
 import ru.otus.msa.user.api.http.dto.LoginRequestDto;
 import ru.otus.msa.user.api.http.dto.RegisterUserDto;
 import ru.otus.msa.user.api.http.dto.UserInfoDto;
 import ru.otus.msa.user.api.http.dto.UserTokenDto;
-import ru.otus.msa.user.adapter.out.kk.security.KeycloakConfig;
 
 import java.util.UUID;
 
@@ -28,7 +28,9 @@ import java.util.UUID;
 @Slf4j
 public class KeycloakClient {
     private final KeycloakConfig config;
+
     private final Keycloak keycloakAdmin;
+
     private final RestClient keyclockRestClient;
 
     public UUID createUser(RegisterUserDto request) {
@@ -56,6 +58,16 @@ public class KeycloakClient {
 
             usersResource.get(userId).resetPassword(credential);
             return UUID.fromString(userId);
+        } catch (Exception e) {
+            log.error("", e);
+            throw new RuntimeException("Не удалось создать пользователя");
+        }
+    }
+
+    public void deleteUser(UUID userId) {
+        try {
+            UsersResource usersResource = keycloakAdmin.realm(config.getRealm()).users();
+            usersResource.delete(userId.toString());
         } catch (Exception e) {
             log.error("", e);
             throw new RuntimeException("Не удалось создать пользователя");

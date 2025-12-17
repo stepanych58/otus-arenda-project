@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "user-service-chart.fullname" . }}
+  labels:
+    {{- include "user-service-chart.labels" . | nindent 4 }}
+  namespace: {{ .Values.projectNamespace }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: otus-msa-keycloak-forward-auth@kubernetescrd
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort:  {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "user-service-chart.selectorLabels" . | nindent 4 }}

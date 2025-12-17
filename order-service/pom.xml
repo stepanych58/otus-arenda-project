@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.otus.msa</groupId>
         <artifactId>msa-arenda-project</artifactId>
-        <version>0.1-snapshot</version>
+        <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -34,6 +34,16 @@
             <groupId>com.otus.msa</groupId>
             <artifactId>user-service-api</artifactId>
             <version>${user.service.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.otus.msa</groupId>
+            <artifactId>product-service-api</artifactId>
+            <version>${product.service.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.otus.msa</groupId>
+            <artifactId>billing-service-api</artifactId>
+            <version>${billing.service.api.version}</version>
         </dependency>
         <!-- MapStruct -->
         <dependency>
@@ -107,6 +117,31 @@
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-kafka</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
